@@ -1,3 +1,14 @@
+:root {
+    --salmon: #FD3F59;
+    --orange: #FFC82E;
+    --yellow: #FEFB34;
+    --green: #53DA3F;
+    --cyan: #01EDFa;
+    --purple: #DD0AB2;
+    --darkBlue: #485DC5; 
+    --navy: #2E2E84;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -15,7 +26,16 @@ body {
 }
 
 .gameBoard {
-    background-color: rgb(0, 0, 135);
-    border: 3px solid rgb(188, 0, 188);
-    border-radius: 3px;
+    background-color: var(--navy);
+    display: flex;
+    flex-wrap: wrap;
+    height: 600px;
+    width: 300px;
+    box-shadow: 4px 4px #485dc5bd;
+}
+
+.gameBoard div {
+    height: 30px;
+    width: 30px;
+    border: var(--navy) 1px solid;
 }
