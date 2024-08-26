@@ -32,10 +32,27 @@ body {
     height: 600px;
     width: 300px;
     box-shadow: 4px 4px #485dc5bd;
+    position: relative;
 }
 
 .gameBoard div {
     height: 30px;
     width: 30px;
     border: var(--navy) 1px solid;
+}
+
+#play {
+    position: absolute;
+    border: none;
+    background-color: var(--purple);
+    color: var(--navy);
+    font-weight: bold;
+    font-size: 2rem;
+    padding: 4px 20px;
+    box-shadow: 2px 2px var(--salmon);
+    cursor: pointer;
+}
+
+#play:hover {
+    background-color: var(--yellow);
 }

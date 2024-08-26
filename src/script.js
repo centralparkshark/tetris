@@ -1,26 +1,18 @@
-const canvas = document.getElementById("gameBoard");
-let speed = 100;
+const playBtn = document.getElementById("play");
+
+const CELL_WIDTH = 30;
+const CELL_HEIGHT = 30;
+let speed = 500;
 let onBoard = [];
 let activePiece;
 
 // make field
 function drawBoard() {
-    let xIndex = 0;
-    let yIndex = -1;
-    for (let i = 0; i < 200; i++) {
-        if (yIndex != 0) {
-            if (yIndex % 9 == 0) {
-                xIndex++;
-                yIndex = -1;
-            }
-        }
-        yIndex++;
-        const div = document.createElement("div");
-        div.id = [xIndex, yIndex];
-        div.setAttribute("filled", false)
-        canvas.appendChild(div);
-    }
-    //getTetro();
+    playBtn.style.display = "none"
+    const canvas = document.getElementById("gameBoard");
+    const ctx = canvas.getContext("2d");
+
+    getTetro(ctx);
 }
 
 
@@ -28,52 +20,53 @@ function drawBoard() {
 // generate random tetrominoes
 // probably want to move the piece randomization to another function
 // so that i can put it in hold later 
-function getTetro() {
+function getTetro(ctx) {
     let x = Math.floor(Math.random() * 9);
-    const y = 0; // always 0 to start at top of board
+    x = x * CELL_WIDTH
+    const y = -1 * CELL_HEIGHT; // always start pieces top board
     //might make negative to start off board 
     const tetros = [
-        {name: "I", drawing: [[x, y],[x, y + 1],[x, y + 2],[x, y + 3]], color: "#01EDFA"}, //cyan
-        {name: "J", drawing: [[x + 1, y],[x + 1, y + 1],[x + 1, y + 2],[x, y + 2],], color: "#485DC5"}, // blue
-        {name: "L", drawing: [[x, y],[x, y + 1],[x, y + 2],[x + 1, y + 2],], color: "#FFC82E"}, // orange
-        {name: "O", drawing: [[x, y],[x, y + 1],[x + 1, y],[x + 1, y + 1],], color: "#FEFB34"}, // yellow
-        {name: "S", drawing: [[x, y],[x, y + 1],[x + 1, y + 1],[x + 1, y + 2],], color: "#53DA3F"}, // green
-        {name: "Z", drawing: [[x + 1, y],[x + 1, y + 1],[x, y+1],[x, y+2],], color: "#FD3F59"}, // red
-        {name: "T", drawing: [[x, y],[x, y + 1],[x, y + 2],[x + 1, y + 1]], color: "#DD0AB2"}, // purple
+        {name: "I", drawing: [[x, y],[x, y + CELL_HEIGHT],[x, y + 2 * CELL_HEIGHT],[x, y + 3 * CELL_HEIGHT]], color: "#01EDFA"}, //cyan
+        {name: "J", drawing: [[x + CELL_WIDTH, y],[x + CELL_WIDTH, y + CELL_HEIGHT],[x + CELL_WIDTH, y + 2 * CELL_HEIGHT],[x, y + 2 * CELL_HEIGHT],], color: "#485DC5"}, // blue
+        {name: "L", drawing: [[x, y],[x, y + CELL_HEIGHT],[x, y + 2 * CELL_HEIGHT],[x + CELL_WIDTH, y + 2 * CELL_HEIGHT],], color: "#FFC82E"}, // orange
+        {name: "O", drawing: [[x, y],[x, y + CELL_HEIGHT],[x + CELL_WIDTH, y],[x + CELL_WIDTH, y + CELL_HEIGHT],], color: "#FEFB34"}, // yellow
+        {name: "S", drawing: [[x, y],[x, y + CELL_HEIGHT],[x + CELL_WIDTH, y + CELL_HEIGHT],[x + CELL_WIDTH, y + 2 * CELL_HEIGHT],], color: "#53DA3F"}, // green
+        {name: "Z", drawing: [[x + CELL_WIDTH, y],[x + CELL_WIDTH, y + CELL_HEIGHT],[x, y + CELL_HEIGHT],[x, y + 2 * CELL_HEIGHT],], color: "#FD3F59"}, // red
+        {name: "T", drawing: [[x, y],[x, y + CELL_HEIGHT],[x, y + 2 * CELL_HEIGHT],[x + CELL_WIDTH, y + CELL_HEIGHT]], color: "#DD0AB2"}, // purple
     ];
-
     let piece = Math.floor(Math.random() * 7);
     //To Do: checkIfFilled
     // if (checkIfFilled()) {
     //     // lose game
     // } else {
-        onBoard.push(activePiece)
-        activePiece = setInterval(activePieceFall, speed, tetros[piece])
+        onBoard.unshift(tetros[piece])
+        activePiece = setInterval(activePieceFall, speed, ctx, onBoard[0])
     // }
 }
 
-function drawShape(piece) {
-     piece.drawing.forEach(square => {
-        let eachBlock = document.getElementById(`${square[1]},${square[0]}`);
-        eachBlock.style.backgroundColor=piece.color;
-        eachBlock.setAttribute("filled", true)
+function drawShape(ctx, piece) {
+    let activeShape = []; 
+    ctx.fillStyle = piece.color; 
+    piece.drawing.forEach(square => {
+        activeShape.push([square[0], square[1]])
+        ctx.fillRect(square[0], square[1], CELL_WIDTH, CELL_HEIGHT)
      });
+     return activeShape;
 }
 
 // move tetro from top to bottom
-function activePieceFall(piece) {
-    piece.drawing.forEach(square => {
-        // clear square
-        let prevBlock = document.getElementById(`${square[1]},${square[0]}`);
-        prevBlock.style.backgroundColor="transparent";
-        prevBlock.setAttribute("filled", false)
-        square[1]++; 
-        drawShape(piece);
-        if (square[1] >= 19) {
-            clearInterval(activePiece)
-            getTetro();
-        }
+function activePieceFall(ctx, piece) {
+    onBoard[0].drawing.forEach(square => {
+        ctx.clearRect(square[0], square[1], CELL_WIDTH, CELL_HEIGHT)
     });
+    piece.drawing.forEach(square => {
+        if (square[1] >= 540) {
+            clearInterval(activePiece);
+            //getTetro(ctx)
+        }
+        square[1] += CELL_HEIGHT;
+    });
+    drawShape(ctx, onBoard[0])
 }
 
 
@@ -91,5 +84,5 @@ function activePieceFall(piece) {
 // - increase speed with level
 // - hard drop
 
-
-drawBoard();
+playBtn.addEventListener('click', drawBoard);
+// drawBoard();
